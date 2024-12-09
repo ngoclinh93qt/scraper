@@ -1,0 +1,27 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model URL {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("pending")
+  address   String   @unique
+  createdAt DateTime @default(now())
+  scrapedData     ScrapedData[]
+}
+
+model ScrapedData {
+  id     Int    @id @default(autoincrement())
+  type   String
+  link   String
+  urlId  Int
+  url    URL    @relation(fields: [urlId], references: [id])
+  @@unique([urlId, link])
+}
