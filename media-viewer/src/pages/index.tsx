@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Media } from '@/types';
 import axiosInstance from '@/axiosInstance';
+import SearchBar from '@/components/SearchBar';
+import MediaView from '@/components/MediaView';
 
 
 export default function Home() {
@@ -9,7 +11,7 @@ export default function Home() {
   const [typeFilter, setTypeFilter] = useState('');
   const [searchText, setSearchText] = useState('');
   const [total, setTotal] = useState(0);
-  const limit = 10;
+  const limit = 12;
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -26,47 +28,15 @@ export default function Home() {
 
     fetchMedia();
   }, [page, typeFilter, searchText]);
-  const renderMediaItem = (item: Media) => (
-    <div key={item.id} className="bg-white shadow-lg rounded-md overflow-hidden">
-      <p className="text-sm font-medium text-gray-700 p-2">{item.type.toUpperCase()}</p>
-      {item.type === 'image' ? (
-        <img src={item.link} alt="Media" className="w-full h-48 object-cover" />
-      ) : (
-        <video controls className="w-full h-48 object-cover">
-          <source src={item.link} type="video/mp4" />
-        </video>
-      )}
-    </div>
-  );
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-white">Media Viewer client side rendering</h1>
 
-      <div className="flex justify-center mb-6">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="p-2 border border-gray-300 rounded-md shadow-sm w-64"
-          onChange={(e) => {
-            setSearchText(e.target.value);
-            setPage(1);
-          }}
-        />
-        <select
-          className="ml-4 p-2 border border-gray-300 rounded-md shadow-sm text-black"
-          onChange={(e) => {
-            setTypeFilter(e.target.value);
-            setPage(1);
-          }}
-        >
-          <option value="" className="">All</option>
-          <option value="image">Images</option>
-          <option value="video">Videos</option>
-        </select>
-      </div>
+      <SearchBar setSearchText={setSearchText} setPage={setPage} setTypeFilter={setTypeFilter} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {media.map(renderMediaItem)}
+        {media.map(item => <MediaView item={item} />)}
       </div>
 
       <div className="flex justify-between items-center mt-8">

@@ -1,8 +1,8 @@
 
 import axiosInstance from '@/axiosInstance';
+import MediaView from '@/components/MediaView';
 import { Media } from '@/types';
 import { GetServerSideProps } from 'next';
-import React from 'react';
 
 interface MediaPageProps {
   media: Media[];
@@ -14,7 +14,7 @@ interface MediaPageProps {
 export const getServerSideProps: GetServerSideProps<MediaPageProps> = async (
   context
 ) => {
-  const { page = '1', limit = '10' } = context.query;
+  const { page = '1', limit = '12' } = context.query;
 
   try {
     const response = await axiosInstance.get('/media/paginated', {
@@ -27,8 +27,8 @@ export const getServerSideProps: GetServerSideProps<MediaPageProps> = async (
       props: {
         media,
         totalCount,
-        currentPage: parseInt(page as string, 10),
-        totalPages: Math.ceil(totalCount / parseInt(limit as string, 10)),
+        currentPage: parseInt(page as string, 12),
+        totalPages: Math.ceil(totalCount / parseInt(limit as string, 12)),
       },
     };
   } catch (error) {
@@ -38,38 +38,26 @@ export const getServerSideProps: GetServerSideProps<MediaPageProps> = async (
       props: {
         media: [],
         totalCount: 0,
-        currentPage: parseInt(page as string, 10),
+        currentPage: parseInt(page as string, 12),
         totalPages: 0,
       },
     };
   }
 };
 
-const MediaPageSeverSide: React.FC<MediaPageProps> = ({
+const MediaPageSeverSide = ({
   media,
   totalCount,
   currentPage,
   totalPages,
-}) => {
-  console.log(totalCount)
-  const renderMediaItem = (item: Media) => (
-    <div key={item.id} className="bg-white shadow-lg rounded-md overflow-hidden">
-      <p className="text-sm font-medium text-gray-700 p-2">{item.type.toUpperCase()}</p>
-      {item.type === 'image' ? (
-        <img src={item.link} alt="Media" className="w-full h-48 object-cover" />
-      ) : (
-        <video controls className="w-full h-48 object-cover">
-          <source src={item.link} type="video/mp4" />
-        </video>
-      )}
-    </div>
-  );
+}: MediaPageProps) => {
+
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">Media Viewer</h1>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {media.map(renderMediaItem)}
+        {media.map(item => <MediaView item={item} />)}
       </div>
       <div className="mt-4 flex justify-between">
         <button
@@ -77,7 +65,7 @@ const MediaPageSeverSide: React.FC<MediaPageProps> = ({
           disabled={currentPage <= 1}
         >
           <a
-            href={`/?page=${currentPage - 1}&limit=10`}
+            href={`/?page=${currentPage - 1}&limit=12`}
             className="no-underline text-white"
           >
             Previous
@@ -93,7 +81,7 @@ const MediaPageSeverSide: React.FC<MediaPageProps> = ({
           disabled={currentPage >= totalPages}
         >
           <a
-            href={`/severside/?page=${currentPage + 1}&limit=10`}
+            href={`/severside/?page=${currentPage + 1}&limit=12`}
             className="no-underline text-white"
           >
             Next
